@@ -1,25 +1,32 @@
 import { useEffect, useState } from 'react'
 import { api } from '../../api/client'
-import { Box, Button, Card, CardContent, Typography } from '@mui/material'
+import { Card, CardContent } from '@mui/material'
+import { DataGrid } from '@mui/x-data-grid'
 
 export function StudentsPage() {
-  const [items, setItems] = useState([])
-  const load = async () => { const { data } = await api.get('/admin/students'); setItems(data.items) }
+  const [rows, setRows] = useState([])
+  const load = async () => { const { data } = await api.get('/admin/students'); setRows(data.items) }
   useEffect(() => { load() }, [])
   const setApproval = async (id, approve) => { await api.patch(`/admin/students/${id}/${approve?'approve':'reject'}`); load() }
+  const columns = [
+    { field: 'id', headerName: 'ID', width: 70 },
+    { field: 'name', headerName: 'Name', flex: 1 },
+    { field: 'email', headerName: 'Email', flex: 1 },
+    { field: 'approved', headerName: 'Approved', width: 120, valueFormatter: ({ value }) => value ? 'Yes' : 'No' },
+    { field: 'created_at', headerName: 'Joined', width: 180 },
+    { field: 'actions', headerName: 'Actions', width: 220, renderCell: (params) => (
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button onClick={()=>setApproval(params.row.id, true)}>Approve</button>
+          <button onClick={()=>setApproval(params.row.id, false)}>Reject</button>
+        </div>
+      )
+    },
+  ]
   return (
     <Card><CardContent>
-      <Typography variant="h6" gutterBottom>Students</Typography>
-      {items.map(s => (
-        <Box key={s.id} sx={{ p: 1.5, border: '1px solid #eee', borderRadius: 1, mb: 1 }}>
-          <Typography>{s.name} • {s.email}</Typography>
-          <Typography variant="caption">Approved: {s.approved ? 'Yes' : 'No'}</Typography>
-          <Box>
-            <Button size="small" onClick={()=>setApproval(s.id, true)}>Approve</Button>
-            <Button size="small" color="warning" onClick={()=>setApproval(s.id, false)}>Reject</Button>
-          </Box>
-        </Box>
-      ))}
+      <div style={{ height: 520, width: '100%' }}>
+        <DataGrid rows={rows} columns={columns} disableRowSelectionOnClick pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} />
+      </div>
     </CardContent></Card>
   )
 }

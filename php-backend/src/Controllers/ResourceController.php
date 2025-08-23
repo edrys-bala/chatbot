@@ -76,5 +76,31 @@ class ResourceController
         $stmt->execute([$id]);
         Response::json(['message' => 'Deleted']);
     }
+
+    public function download(int $id): void
+    {
+        // Any authenticated user can download
+        AuthUtil::requireAuth();
+        $stmt = DB::conn()->prepare('SELECT title, file_path, file_type FROM resources WHERE id = ?');
+        $stmt->execute([$id]);
+        $res = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$res) {
+            Response::json(['error' => 'Not found'], 404);
+            return;
+        }
+        $fullPath = dirname(__DIR__, 2) . '/public/' . $res['file_path'];
+        if (!is_file($fullPath)) {
+            Response::json(['error' => 'File missing'], 404);
+            return;
+        }
+        // Increment downloads
+        DB::conn()->prepare('UPDATE resources SET downloads = downloads + 1 WHERE id = ?')->execute([$id]);
+        $mime = $res['file_type'] ?: 'application/octet-stream';
+        header('Content-Type: ' . $mime);
+        header('Content-Disposition: attachment; filename="' . basename($res['title']) . '"');
+        header('Content-Length: ' . filesize($fullPath));
+        readfile($fullPath);
+        exit;
+    }
 }
 
