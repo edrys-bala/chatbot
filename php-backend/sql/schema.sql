@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS resources (
   file_path VARCHAR(500) NOT NULL,
   file_type VARCHAR(120) NULL,
   file_size INT NULL,
+  downloads INT NOT NULL DEFAULT 0,
   created_by INT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL

@@ -77,6 +77,7 @@ $moreRoutes = [
     ['GET',  '#^/api/resources$#', [ResourceController::class, 'list']],
     ['POST', '#^/api/resources/upload$#', [ResourceController::class, 'upload']],
     ['DELETE', '#^/api/resources/(\\d+)$#', [ResourceController::class, 'delete']],
+    ['GET',  '#^/api/resources/download/(\\d+)$#', [ResourceController::class, 'download']],
 
     // Chat
     ['POST', '#^/api/chat/start$#', [ChatController::class, 'startConversation']],
@@ -86,6 +87,8 @@ $moreRoutes = [
     // Admin
     ['GET',  '#^/api/admin/students$#', [AdminController::class, 'listStudents']],
     ['PATCH','#^/api/admin/students/(\\d+)/(approve|reject)$#', [AdminController::class, 'setStudentApproval']],
+    ['GET',  '#^/api/admin/analytics$#', [AdminController::class, 'analytics']],
+    ['GET',  '#^/api/admin/chats$#', [AdminController::class, 'searchChats']],
 ];
 
 $routes = array_merge($routes, $moreRoutes);

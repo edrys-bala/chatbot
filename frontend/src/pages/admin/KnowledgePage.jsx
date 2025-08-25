@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Box, Button, Card, CardContent, Grid, TextField, Typography } from '@mui/material'
+import { DataGrid } from '@mui/x-data-grid'
 import { api } from '../../api/client'
 
 export function KnowledgePage() {
@@ -50,15 +51,24 @@ export function KnowledgePage() {
       <Grid item xs={12}>
         <Card><CardContent>
           <Typography variant="h6" gutterBottom>Articles</Typography>
-          <Box sx={{ display: 'grid', gap: 1.5 }}>
-            {items.map(it => (
-              <Box key={it.id} sx={{ p: 1.5, border: '1px solid #eee', borderRadius: 1 }}>
-                <Typography variant="subtitle1">{it.title}</Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'pre-wrap' }}>{String(it.content).slice(0, 200)}...</Typography>
-                <Button size="small" color="error" onClick={()=>del(it.id)} sx={{ mt: 1 }}>Delete</Button>
-              </Box>
-            ))}
-          </Box>
+          <div style={{ height: 520, width: '100%' }}>
+            <DataGrid
+              rows={items}
+              columns={[
+                { field: 'id', headerName: 'ID', width: 70 },
+                { field: 'title', headerName: 'Title', flex: 1 },
+                { field: 'tags', headerName: 'Tags', width: 160 },
+                { field: 'created_at', headerName: 'Created', width: 180 },
+                { field: 'actions', headerName: 'Actions', width: 140, renderCell: (params) => (
+                    <Button size="small" color="error" onClick={()=>del(params.row.id)}>Delete</Button>
+                  )
+                },
+              ]}
+              disableRowSelectionOnClick
+              pageSizeOptions={[10, 25, 50]}
+              initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
+            />
+          </div>
         </CardContent></Card>
       </Grid>
     </Grid>

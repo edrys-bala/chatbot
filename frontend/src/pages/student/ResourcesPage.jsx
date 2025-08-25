@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api } from '../../api/client'
-import { Box, Card, CardContent, TextField, Typography } from '@mui/material'
+import { Box, Button, Card, CardContent, TextField, Typography } from '@mui/material'
 
 export function ResourcesPage() {
   const [items, setItems] = useState([])
@@ -19,6 +19,9 @@ export function ResourcesPage() {
             <Typography variant="subtitle1">{r.title}</Typography>
             <Typography variant="body2" color="text.secondary">{r.description}</Typography>
             <Typography variant="caption">{r.category}</Typography>
+            <Box sx={{ mt: 1 }}>
+              <Button size="small" variant="outlined" href={`${api.defaults.baseURL}/resources/download/${r.id}`}>Download</Button>
+            </Box>
           </CardContent></Card>
         ))}
       </Box>
